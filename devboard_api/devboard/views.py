@@ -50,3 +50,52 @@ class ProjectDetails(APIView):
         serializer = ProjectSerializer(project)
         project.delete()
         return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+
+class TaskList(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, project_id):
+        try:
+            return Task.objects.filter(project=project_id)
+        except Task.DoesNotExist:
+            raise Http404
+
+    def get(self, request, project_id):
+        tasks = self.get_object(project_id)
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, project_id):
+        serializer = TaskSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class TaskDetails(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, project_id, task_id):
+        try:
+            return Task.objects.get(project=project_id, pk=task_id)
+        except Task.DoesNotExist:
+            raise Http404
+
+    def get(self, request, project_id, task_id):
+        task = self.get_object(project_id, task_id)
+        serializer = TaskSerializer(task)
+        return Response(serializer.data)
+
+    def put(self, request, project_id, task_id):
+        task = self.get_object(project_id, task_id)
+        serializer = TaskSerializer(task, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, project_id, task_id):
+        task = self.get_object(project_id, task_id)
+        serializer = TaskSerializer(task)
+        task.delete()
+        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
