@@ -99,3 +99,52 @@ class TaskDetails(APIView):
         serializer = TaskSerializer(task)
         task.delete()
         return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+
+class TaskNoteList(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, project_id, task_id):
+        try:
+            return TaskNote.objects.filter(task=task_id)
+        except TaskNote.DoesNotExist:
+            raise Http404
+
+    def get(self, request, project_id, task_id):
+        tasknotes = self.get_object(project_id, task_id)
+        serializer = TaskNoteSerializer(tasknotes, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, project_id, task_id):
+        serializer = TaskNoteSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class TaskNoteDetails(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, task_id, note_id):
+        try:
+            return TaskNote.objects.get(task=task_id, pk=note_id)
+        except TaskNote.DoesNotExist:
+            raise Http404
+
+    def get(self, request, project_id, task_id, note_id):
+        task_note = self.get_object(task_id, note_id)
+        serializer = TaskNoteSerializer(task_note)
+        return Response(serializer.data)
+
+    def put(self, request, project_id, task_id, note_id):
+        task_note = self.get_object(task_id, note_id)
+        serializer = TaskNoteSerializer(task_note, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, project_id, task_id, note_id):
+        task_note = self.get_object(task_id, note_id)
+        serializer = TaskNoteSerializer(task_note)
+        task_note.delete()
+        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
