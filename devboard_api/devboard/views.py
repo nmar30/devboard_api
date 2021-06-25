@@ -1,12 +1,20 @@
 from django.shortcuts import render
 from .models import Project, Task, TaskNote
-from .serializers import ProjectSerializer, TaskSerializer, TaskNoteSerializer
+from .serializers import ProjectSerializer, TaskSerializer, TaskNoteSerializer, UserSerializer
 from rest_framework.views import APIView
 from rest_framework.views import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import RetrieveAPIView
 
 # Create your views here.
+class UserAPIView(RetrieveAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserSerializer
+
+    def get(self):
+        return self.request.user
+
 class ProjectList(APIView):
     permission_classes = (IsAuthenticated,)
 
