@@ -1,8 +1,18 @@
 from rest_framework import serializers
+from django.contrib.auth.models import User
 from .models import Project, Task, TaskNote
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'id', 'first_name', 'last_name')
+
+
 class ProjectSerializer(serializers.ModelSerializer):
+    owner = UserSerializer(read_only=True)
+    members = UserSerializer(read_only=True, many=True)
+
     class Meta:
         model = Project
         fields = ['id', 'name', 'description', 'owner', 'members']
@@ -10,6 +20,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 class TaskSerializer(serializers.ModelSerializer):
     project = ProjectSerializer(read_only=True)
+    owner = UserSerializer(read_only=True)
 
     class Meta:
         model = Task
@@ -18,6 +29,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
 class TaskNoteSerializer(serializers.ModelSerializer):
     task = TaskSerializer(read_only=True)
+    owner = UserSerializer(read_only=True)
 
     class Meta:
         model = TaskNote

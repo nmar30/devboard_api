@@ -10,8 +10,14 @@ from rest_framework.permissions import IsAuthenticated
 class ProjectList(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request):
-        project = Project.objects.all()
+    def get_object(self, user_id):
+        try:
+            return Project.objects.filter(members=user_id)
+        except Project.DoesNotExist:
+            raise Http404
+
+    def get(self, request, user_id):
+        project = self.get_object(user_id)
         serializer = ProjectSerializer(project, many=True)
         return Response(serializer.data)
 
