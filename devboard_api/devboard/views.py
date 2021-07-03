@@ -6,7 +6,7 @@ from rest_framework.views import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
-# Create your views here.
+
 class ProjectList(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -16,7 +16,8 @@ class ProjectList(APIView):
         except Project.DoesNotExist:
             raise Http404
 
-    def get(self, request, user_id):
+    def get(self, request):
+        user_id = self.request.query_params.get('user')
         project = self.get_object(user_id)
         serializer = ProjectSerializer(project, many=True)
         return Response(serializer.data)
@@ -57,6 +58,7 @@ class ProjectDetails(APIView):
         project.delete()
         return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
 
+
 class TaskList(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -77,6 +79,7 @@ class TaskList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class TaskDetails(APIView):
     permission_classes = (IsAuthenticated,)
@@ -106,6 +109,7 @@ class TaskDetails(APIView):
         task.delete()
         return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
 
+
 class TaskNoteList(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -126,6 +130,7 @@ class TaskNoteList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class TaskNoteDetails(APIView):
     permission_classes = (IsAuthenticated,)
