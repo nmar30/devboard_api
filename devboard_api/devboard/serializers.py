@@ -25,6 +25,12 @@ class ProjectNestedSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ['id', 'project', 'name', 'status', 'due_date', 'owner']
+
+
+class TaskNestedSerializer(serializers.ModelSerializer):
     project = ProjectSerializer(read_only=True)
     owner = UserSerializer(read_only=True)
 
@@ -34,6 +40,12 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class TaskNoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TaskNote
+        fields = ['id', 'task', 'description', 'resources', 'start_time', 'end_time', 'owner']
+
+
+class TaskNoteNestedSerializer(serializers.ModelSerializer):
     task = TaskSerializer(read_only=True)
     owner = UserSerializer(read_only=True)
 

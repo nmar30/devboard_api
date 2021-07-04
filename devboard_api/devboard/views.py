@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Project, Task, TaskNote
-from .serializers import ProjectSerializer, ProjectNestedSerializer, TaskSerializer, TaskNoteSerializer, UserSerializer
+from .serializers import ProjectSerializer, ProjectNestedSerializer, TaskSerializer, TaskNestedSerializer, \
+    TaskNoteSerializer, TaskNoteNestedSerializer, UserSerializer
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework.views import Response
@@ -42,7 +43,7 @@ class ProjectDetails(APIView):
 
     def get(self, request, project_id):
         project = self.get_object(project_id)
-        serializer = ProjectSerializer(project)
+        serializer = ProjectNestedSerializer(project)
         return Response(serializer.data)
 
     def put(self, request, project_id):
@@ -71,7 +72,7 @@ class TaskList(APIView):
 
     def get(self, request, project_id):
         tasks = self.get_object(project_id)
-        serializer = TaskSerializer(tasks, many=True)
+        serializer = TaskNestedSerializer(tasks, many=True)
         return Response(serializer.data)
 
     def post(self, request, project_id):
@@ -93,7 +94,7 @@ class TaskDetails(APIView):
 
     def get(self, request, project_id, task_id):
         task = self.get_object(project_id, task_id)
-        serializer = TaskSerializer(task)
+        serializer = TaskNestedSerializer(task)
         return Response(serializer.data)
 
     def put(self, request, project_id, task_id):
@@ -122,7 +123,7 @@ class TaskNoteList(APIView):
 
     def get(self, request, project_id, task_id):
         tasknotes = self.get_object(project_id, task_id)
-        serializer = TaskNoteSerializer(tasknotes, many=True)
+        serializer = TaskNoteNestedSerializer(tasknotes, many=True)
         return Response(serializer.data)
 
     def post(self, request, project_id, task_id):
@@ -144,7 +145,7 @@ class TaskNoteDetails(APIView):
 
     def get(self, request, project_id, task_id, note_id):
         task_note = self.get_object(task_id, note_id)
-        serializer = TaskNoteSerializer(task_note)
+        serializer = TaskNoteNestedSerializer(task_note)
         return Response(serializer.data)
 
     def put(self, request, project_id, task_id, note_id):
