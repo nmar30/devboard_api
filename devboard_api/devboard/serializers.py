@@ -6,10 +6,16 @@ from .models import Project, Task, TaskNote
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email', 'id', 'first_name', 'last_name')
+        fields = ('id', 'username', 'email',  'first_name', 'last_name')
 
 
 class ProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ['id', 'name', 'description', 'owner', 'members']
+
+
+class ProjectNestedSerializer(serializers.ModelSerializer):
     owner = UserSerializer(read_only=True)
     members = UserSerializer(read_only=True, many=True)
 

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Project, Task, TaskNote
-from .serializers import ProjectSerializer, TaskSerializer, TaskNoteSerializer
+from .serializers import ProjectSerializer, ProjectNestedSerializer, TaskSerializer, TaskNoteSerializer, UserSerializer
+from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework.views import Response
 from rest_framework import status
@@ -19,7 +20,7 @@ class ProjectList(APIView):
     def get(self, request):
         user_id = self.request.query_params.get('user')
         project = self.get_object(user_id)
-        serializer = ProjectSerializer(project, many=True)
+        serializer = ProjectNestedSerializer(project, many=True)
         return Response(serializer.data)
 
     def post(self, request):
@@ -159,3 +160,27 @@ class TaskNoteDetails(APIView):
         serializer = TaskNoteSerializer(task_note)
         task_note.delete()
         return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+
+
+class UserDetails(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, username):
+        try:
+            return User.objects.get(username=username)
+        except Project.DoesNotExist:
+            raise Http404
+
+    def get(self, request):
+        username= self.request.query_params.get('username')
+        user = self.get_object(username)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
+    def put(self, request, project_id):
+        project = self.get_object(project_id)
+        serializer = ProjectSerializer(project, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
