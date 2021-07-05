@@ -54,6 +54,14 @@ class ProjectDetails(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def patch(self, request, project_id):
+        project = self.get_object(project_id)
+        serializer = ProjectSerializer(project, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def delete(self, request, project_id):
         project = self.get_object(project_id)
         serializer = ProjectSerializer(project)
@@ -100,6 +108,14 @@ class TaskDetails(APIView):
     def put(self, request, project_id, task_id):
         task = self.get_object(project_id, task_id)
         serializer = TaskSerializer(task, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, project_id, task_id):
+        task = self.get_object(project_id, task_id)
+        serializer = TaskSerializer(task, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -156,6 +172,14 @@ class TaskNoteDetails(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def patch(self, request, project_id, task_id, note_id):
+        task_note = self.get_object(task_id, note_id)
+        serializer = TaskNoteSerializer(task_note, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def delete(self, request, project_id, task_id, note_id):
         task_note = self.get_object(task_id, note_id)
         serializer = TaskNoteSerializer(task_note)
@@ -173,15 +197,7 @@ class UserDetails(APIView):
             raise Http404
 
     def get(self, request):
-        username= self.request.query_params.get('username')
+        username = self.request.query_params.get('username')
         user = self.get_object(username)
         serializer = UserSerializer(user)
         return Response(serializer.data)
-
-    def put(self, request, project_id):
-        project = self.get_object(project_id)
-        serializer = ProjectSerializer(project, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
