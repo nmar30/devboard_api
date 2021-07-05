@@ -27,7 +27,7 @@ class ProjectNestedSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'project', 'name', 'status', 'due_date', 'owner']
+        fields = ['id', 'project', 'name', 'description', 'status', 'start_date', 'due_date', 'owner']
 
 
 class TaskNestedSerializer(serializers.ModelSerializer):
@@ -36,7 +36,7 @@ class TaskNestedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ['id', 'project', 'name', 'status', 'due_date', 'owner']
+        fields = ['id', 'project', 'name', 'description', 'status', 'start_date', 'due_date', 'owner']
 
 
 class TaskNoteSerializer(serializers.ModelSerializer):

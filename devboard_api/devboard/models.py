@@ -15,7 +15,9 @@ class Project(models.Model):
 class Task(models.Model):
     project = models.ForeignKey('Project', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
+    description = models.CharField(max_length=200)
     status = models.CharField(max_length=100)
+    start_date = models.DateField()
     due_date = models.DateField()
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
