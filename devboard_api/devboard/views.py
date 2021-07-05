@@ -201,3 +201,34 @@ class UserDetails(APIView):
         user = self.get_object(username)
         serializer = UserSerializer(user)
         return Response(serializer.data)
+
+# User Dashboard Queries
+class UserTaskOwnerList(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, user_id):
+        try:
+            return Task.objects.filter(owner=user_id)
+        except Task.DoesNotExist:
+            raise Http404
+
+    def get(self, request):
+        user_id = self.request.query_params.get('user')
+        tasks = self.get_object(user_id)
+        serializer = TaskNestedSerializer(tasks, many=True)
+        return Response(serializer.data)
+
+class UserProjectOwnerList(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, user_id):
+        try:
+            return Project.objects.filter(owner=user_id)
+        except Project.DoesNotExist:
+            raise Http404
+
+    def get(self, request):
+        user_id = self.request.query_params.get('user')
+        project = self.get_object(user_id)
+        serializer = ProjectNestedSerializer(project, many=True)
+        return Response(serializer.data)
