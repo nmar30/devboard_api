@@ -28,8 +28,9 @@ class TaskNote(models.Model):
     task = models.ForeignKey('Task', on_delete=models.CASCADE)
     description = models.CharField(max_length=200)
     resources = models.CharField(max_length=200)
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    date_worked = models.DateField(default='2021-01-01')
+    time_worked = models.IntegerField(default=0)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
